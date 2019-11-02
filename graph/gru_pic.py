@@ -10,7 +10,7 @@ temp_node_list = [("At(t-1)", "*"), ("Av(t-1)", "-*"),  # -*表示左乘
                   ("Zh(t-1)", "*"),("Rh(t-1)", "*"),
                   ("Zt(t)", "+"), ("Z(t)", "sigmoid"),("1-Z(t)", "-"),
                   ("Rt(t)", "+"), ("R(t)", "sigmoid"),
-                  ("Ht(t)", "X"), ("Hh(t)", "*"), ("Hz(t)", "tanh"),
+                  ("Ht(t)", "X"), ("Hh(t)", "*"), ("Hzt(t)", "+"), ("Hz(t)", "tanh"),
                   ("H1(t)", "X"), ("H2(t)", "X"), ("H(t)", "+")]
 
 edges_list = [("Wa", "At(t-1)"), ("H(t-1)", "At(t-1)"),
@@ -25,8 +25,9 @@ edges_list = [("Wa", "At(t-1)"), ("H(t-1)", "At(t-1)"),
               ("Zt(t)", "Z(t)"), ("Z(t)", "1-Z(t)"), ("Rt(t)", "R(t)"),
               ("H(t-1)", "Ht(t)"), ("R(t)", "Ht(t)"),
               ("Uh", "Hh(t)"), ("Ht(t)", "Hh(t)"), ("Hh(t)", "Hz(t)"),
-              ("Hz(t)", "H2(t)"), ("1-Z(t)", "H2(t)"),
-              ("H(t-1)", "H1(t)"), ("Z(t)", "H1(t)"),
+              ("Hzt(t)", "Hz(t)"), ("Ha(t-1)", "Hz(t)"),
+              ("Hz(t)", "H2(t)"), ("Z(t)", "H2(t)"),
+              ("H(t-1)", "H1(t)"), ("1-Z(t)", "H1(t)"),
               ("H1(t)", "H(t)"), ("H2(t)", "H(t)"),
               ("H(t)", "End")]
 
@@ -35,7 +36,7 @@ G.graph_attr["label"] = "GRU hidden layer"
 
 # add input node
 for n_i in input_node_list:
-    G.add_node(n_i, color="red")
+    G.add_node(n_i, color="red", shape="box")
 
 # add temp node
 for (n_t, label) in temp_node_list:
@@ -53,4 +54,4 @@ print(os.getcwd())
 # save pic
 for lay in layouts:
     G.layout(lay)
-    G.draw("images/GRU_{}.png".format(lay))
+    G.draw("images/gru_{}.png".format(lay))
