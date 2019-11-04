@@ -1,25 +1,25 @@
 import numpy as np
+import torch.nn as nn
+import torch
+from utils.tools import onehot, softmax, wrapper
 
 
-class CrossEntropyLoss:
+class LossLayer:
     """cross entropy loss"""
-    def __init__(self, label):
-        self.label = label
+    def __init__(self, outputs, y_onehot):
+        self.outputs = outputs
+        self.y_onehot = y_onehot
+        self.softmax_x = softmax(outputs)
+        self.n = outputs.shape[0]
 
-    def forward(self, y_pred):
-        self.y_pred = y_pred
-        loss = - self.y_pred[self.label - 1] + np.log(np.sum(self.y_pred))
-        return loss
+    def forward(self):
+        cross_sum = - np.multiply(self.y_onehot, np.log(self.softmax_x))
+        cross_sum = wrapper(np.sum(cross_sum, axis=1)) # change column to row
+        return np.mean(cross_sum)
 
     def backward(self):  # gradient
-        # onehot
-        y_onehot = np.zeros((len(self.y_pred),))
-        y_onehot[self.label - 1] = 1
-        return - np.multiply(y_onehot, self.y_pred) + self.softmax(self.y_pred)
-
-    def softmax(self, x):
-        exp_x = np.exp(x)
-        return exp_x / np.sum(exp_x)
+        grad = self.softmax_x - self.y_onehot
+        return grad / self.n
 
 
 def numerical_grad_2d(f, X, h=1e-3):
@@ -56,34 +56,49 @@ def test_numerical_1d():
 
 def test_forward():
     np.random.seed(1)
-    y_pred = np.random.random((4, ))
-    label = np.arange(5)
-    print("y_pred", y_pred)
-    print("label", label)
-    C = CrossEntropyLoss(label)
-    print(C.forward(y_pred))
+    y_pred = np.random.random((1, 4))
+    y = np.array([1]).reshape(1, )
+    print("y_pred", y_pred, y_pred.shape)
+    print("y", y, y.shape)
 
-    import torch.nn as nn
-    import torch
-    criterion = nn.CrossEntropyLoss()
-    loss = criterion(torch.from_numpy(y_pred), torch.from_numpy(label))
-    print(loss)
+    output = torch.from_numpy(y_pred)
+    label = torch.from_numpy(y).long()
+    # torch loss
+    criterion = nn.LossLayer()
+    torch_loss = criterion(output, label)
+    print("", torch_loss)
+
+    # my loss
+    score = output[0, label.item()].item()  # label对应的class的logits（得分）
+    print('Score for the ground truth class = ', label)
+    first = - score
+    second = 0
+    for i in range(4):
+        second += np.exp(output[0, i])
+    second = np.log(second)
+    my_loss = first + second
+    print('-' * 20) # study
+    print('my loss = ', my_loss)
+
+    # numpy loss
+    cross_entropy = LossLayer(y_pred, onehot(y,  y_pred.shape[1])) # shape[1]
+    print("numpy loss", cross_entropy.forward())
 
 
-def test_backward():
-    np.random.seed(1)
-    y_pred = np.random.random((4,))
-    label = 2
-    print("y_pred", y_pred)
-    C = CrossEntropyLoss(label)
-    f = lambda x: C.forward(x)
-
-    n_grad = numerical_grad_1d(f, y_pred, h=1e-3)
-    grad = C.backward()
-
-    print("n_grad", n_grad)
-    print("grad", grad)
-
-
+# def test_backward():
 if __name__ == '__main__':
-    test_forward()
+    np.random.seed(1)
+    y_pred = np.random.random((1, 4))  # reshape(1, -1) 或  reshape(-1, 1)
+    y = np.array([1]).reshape(1, )
+    y_onehot = onehot(y, y_pred.shape[1])
+    print("y_pred", y_pred, y_pred.shape)
+    print("y", y, y.shape)
+
+    f = lambda x: LossLayer(x, y_onehot).forward()
+    print("numerical gradient", numerical_grad_2d(f, y_pred, h=1e-5))
+
+    print("numpy gradient", LossLayer(y_pred, y_onehot).backward())
+
+
+# if __name__ == '__main__':
+#     test_backward()

@@ -76,6 +76,7 @@ def data_convert(data_list, n_annotation_dim):
             task_data_list[task_type-1].append([edge_list, annotation, task_output])
     return task_data_list
 
+
 def create_adjacency_matrix(edges, n_nodes, n_edge_types):
     a = np.zeros([n_nodes, n_nodes * n_edge_types * 2])
     for edge in edges:
