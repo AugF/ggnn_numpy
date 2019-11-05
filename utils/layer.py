@@ -9,7 +9,7 @@ class LossLayer:
     def forward(self, z, y):
         """
         :param z:  (n_node, 1)
-        :param y: (1, )
+        :param y: 1
         :return: loss
         """
         z = z.reshape(1, -1)
