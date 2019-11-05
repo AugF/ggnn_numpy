@@ -1,6 +1,5 @@
 from utils.dataset import bAbIDataset
 from utils.model import GGNN
-from utils.loss import CrossEntropyLoss
 import numpy as np
 
 task_id = 4
@@ -22,31 +21,30 @@ train_dataset = bAbIDataset(dataroot, qustion_id, True, train_size)
 n_edge_types = train_dataset.n_edge_types
 n_node = train_dataset.n_node
 
-net = GGNN()
-criterion = CrossEntropyLoss
+net = GGNN(annotation_dim=annotation_dim, state_dim=state_dim,
+           n_node=n_node, n_edge_types=n_edge_types,
+           n_steps=n_steps, lr=lr)
 
-for i, (adj_matrix, annotation, target) in enumerate(train_dataset.data):
-    # x: (4, 1) padding: (4, 3)
-    init_inputs = np.stack((annotation, np.zeros(n_node, state_dim - annotation_dim))) # init_inputs
-    outputs = net
-    loss_fun = criterion(outputs, target)
-    loss = loss_fun.forward()
-    loss_grad = loss_fun.backward()
+for i, (adj, annotation, target) in enumerate(train_dataset.data):
+    loss = net.forward(annotation=annotation, adj=adj, mode="train", target=target)
+    net.backward()
+    print("train: {}, loss: {}".format(i, loss))
+    break
+
 
 # 2. test
-test_dataset = bAbIDataset(dataroot, qustion_id, False, train_size)
-
-correct = 0
-loss = 0
-count = 0
-
-for i, (adj_matrix, annotation, target) in enumerate(test_dataset.data):
-    outputs = net  # (1, 4)
-    loss += criterion(outputs, target).forward()
-    correct += int(np.argmax(outputs.reshape(-1, )) == target)
-    count += 1
-
-acc = correct * 1.0 / count
-avg_loss = loss / count
-
-print("test_acc: ", acc, "avg_acc: ", avg_loss)
+# test_dataset = bAbIDataset(dataroot, qustion_id, False, train_size)
+#
+# correct = 0
+# loss = 0
+# count = 0
+#
+# for i, (adj, annotation, target) in enumerate(test_dataset.data):
+#     loss += net.forward(annotation=annotation, adj=adj, mode="train", target=target)
+#     correct += int(np.argmax(net.z) == target)
+#     count += 1
+#
+# acc = correct * 1.0 / count
+# avg_loss = loss / count
+#
+# print("test_acc: ", acc, "avg_acc: ", avg_loss)

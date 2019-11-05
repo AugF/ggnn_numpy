@@ -5,7 +5,7 @@ from utils.layer import *
 def test_losslayer():
     n_node = 4
     np.random.seed(1)
-    z = np.random.random((1, n_node))
+    z = np.random.random((n_node, 1))
     y = np.array([1])
     lossLayer = LossLayer(n_node)
 
@@ -20,7 +20,7 @@ def test_losslayer():
 
 
 def test_outLayer():
-    np.random.seed(3)
+    np.random.seed(1)
     n_node = 4
     annotation_dim = 1
     state_dim = 3
@@ -158,9 +158,28 @@ def test_GlobalLayer2():
     print("manual grad", manual_grad_x)
     print("grad", grad_x)
 
+def test_single_outlayer():
+    np.random.seed(22)
+    n_node = 4
+    annotation_dim = 1
+    state_dim = 3
+
+    annotation = np.random.random((n_node, annotation_dim))
+    ht = np.random.random((n_node, state_dim))
+    y = np.array([1])
+    lossLayer = LossLayer(n_node)
+    outLayer = OutLayer(annotation_dim, state_dim)
+
+    z = outLayer.forward(ht, annotation)
+    # loss = lossLayer.forward(z, y)
+    print("loss", np.sum(z))
+
+    f = lambda x: np.sum(outLayer.forward(x, annotation))
+    manual_grad = numerical_grad_2d(f, ht, h=1e-6)
+    # grad_z = lossLayer.backward()
+    grad = outLayer.backward(np.ones(z.shape))
+    print("manual_grad", manual_grad)
+    print("grad", grad)
+
 if __name__ == '__main__':
-    test_losslayer()
-    test_outLayer()
-    test_ProgatorLayer()
     test_GlobalLayer()
-    test_GlobalLayer2()

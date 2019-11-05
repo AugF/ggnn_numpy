@@ -16,15 +16,17 @@ class GGNN:
         self.OutLayer = OutLayer(annotation_dim, state_dim, lr)
         self.LossLayer = LossLayer(n_node)
 
-    def forward(self, annotation, adj, target):
+    def forward(self, annotation, adj, mode, target=None):
         pre_state = np.hstack((annotation, np.zeros((self.n_node, self.state_dim - self.annotation_dim))))
 
         for i in range(self.n_steps):
             a_in_t, a_out_t = self.GlobalLayer.forward(pre_state, adj)
             pre_state = self.PropogatorLayer.forward(pre_state, a_in_t, a_out_t)
 
-        z = self.OutLayer.forward(pre_state, annotation)
-        loss = self.LossLayer.forward(z, target)
+        self.z = self.OutLayer.forward(pre_state, annotation)
+        loss = 0
+        if mode == "train":
+            loss = self.LossLayer.forward(self.z, target)
         return loss
 
     def backward(self):
