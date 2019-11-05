@@ -22,4 +22,13 @@ class Adam:
         alpha_t = self.learning_rate * ((1 - self.beta_2 ** self.t) ** 0.5) / (1 - self.beta_1 ** self.t)
         self.m_t = self.beta_1 * self.m_t + (1 - self.beta_1) * g_t
         self.v_t = self.beta_2 * self.v_t + (1 - self.beta_2) * np.multiply(g_t, g_t)
-        self.theta_t -= alpha_t * self.m_t / (np.power(self.v_t, 0.5) + self.epsilon)  # test
+        self.theta_t -= alpha_t * self.m_t / (np.power(self.v_t, 0.5) + self.epsilon)
+        return self.theta_t
+
+
+if __name__ == '__main__':
+    weights = np.random.random((3, 4, 3))
+    print(weights)
+    adam = Adam(weights=weights)
+    grad_weights = np.random.random(weights.shape)
+    print(adam.minimize(grad_weights))

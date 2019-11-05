@@ -11,9 +11,9 @@ class GGNN:
         self.n_steps = n_steps  # 隐藏层的个数
         self.lr = lr
 
-        self.GlobalLayer = GlobalLayer(n_edge_types, n_node, state_dim)
-        self.PropogatorLayer = PropogatorLayer(state_dim)
-        self.OutLayer = OutLayer(annotation_dim, state_dim)
+        self.GlobalLayer = GlobalLayer(n_edge_types, n_node, state_dim, lr)
+        self.PropogatorLayer = PropogatorLayer(state_dim, lr)
+        self.OutLayer = OutLayer(annotation_dim, state_dim, lr)
         self.LossLayer = LossLayer(n_node)
 
     def forward(self, annotation, adj, target):
@@ -29,7 +29,17 @@ class GGNN:
 
     def backward(self):
         """share the GRU part, so should check"""
-        grad_z = self.LossLayer.backwad()
+        grad_z = self.LossLayer.backward()
         grad_ht = self.OutLayer.backward(grad_z)
-        for i in range(self.n_steps - 1):
-            pass # weight should add together
+        for i in range(self.n_steps):
+            grad_res = self.PropogatorLayer.backward(grad_ht)
+            self.PropogatorLayer.grad_weight_z += grad_res[3]
+            self.PropogatorLayer.grad_weight_r += grad_res[4]
+            self.PropogatorLayer.grad_weight_h += grad_res[5]
+            grad_global_res = self.GlobalLayer.backward(grad_res[0], grad_res[1], grad_res[2])
+            self.GlobalLayer.grad_weight_in += grad_global_res[1]
+            self.GlobalLayer.grad_weight_out += grad_global_res[2]
+            grad_ht = grad_global_res[0]
+
+        self.PropogatorLayer.update()
+        self.GlobalLayer.update()
