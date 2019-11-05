@@ -39,22 +39,26 @@ class OutLayer:
         self.adam_weight_o = Adam(weights=self.weight_o, learning_rate=lr)
 
     def forward(self, ht, annotation):
+        """
+        :param ht: (n_node, state_dim)
+        :param annotation: (n_node, annotation_dim)
+        :return: (n_node, 1)
+        """
         self.ht, self.annotation = ht, annotation
         self.z_1 = np.tanh(np.matmul(ht, self.weight_ho) + np.matmul(annotation, self.weight_xo))
         self.z = np.matmul(self.z_1, self.weight_o)
         return self.z
 
     def backward(self, grad_z):
-        t = np.matmul(grad_z, self.weight_o.T) * (1 - self.z_1 ** 2)
+        t1 = np.matmul(grad_z, self.weight_o.T) * (1 - self.z_1 ** 2)
         grad_weight_o = np.matmul(self.z_1.T, grad_z)
-        grad_weight_xo = np.matmul(self.annotation.T, t)
-        grad_weight_ho = np.matmul(self.ht.T, t)
-
+        grad_weight_xo = np.matmul(self.annotation.T, t1)
+        grad_weight_ho = np.matmul(self.ht.T, t1)
+        grad_ht = np.matmul(t1, self.weight_ho.T)
+        # update
         self.weight_ho = self.adam_weight_ho.minimize(grad_weight_ho)
         self.weight_xo = self.adam_weight_xo.minimize(grad_weight_xo)
         self.weight_o = self.adam_weight_o.minimize(grad_weight_o)
-
-        grad_ht = np.matmul(t, self.weight_ho.T)
         return grad_ht
 
 
@@ -123,7 +127,6 @@ class PropogatorLayer:
                 arr += t * self.r_t
             else:
                 arr += t
-
         return grad_a_in_t, grad_a_out_t, grad_pre_state, grad_weight_z, grad_weight_r, grad_weight_h
 
     def update(self):

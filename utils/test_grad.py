@@ -22,18 +22,30 @@ def test_single_outlayer():
     annotation_dim = 1
     state_dim = 3
 
-    annotation = np.random.random((n_node, annotation_dim))
     ht = np.random.random((n_node, state_dim))
-    outLayer = OutLayer(annotation_dim, state_dim)
+    annotation = np.random.random((n_node, annotation_dim))
 
-    z = outLayer.forward(ht, annotation)
-    print("loss", np.sum(z))
+    outlayer = OutLayer(annotation_dim, state_dim)
+    f = lambda x: np.sum(outlayer.forward(x, annotation))
 
-    f = lambda x: np.sum(outLayer.forward(x, annotation))
     manual_grad = numerical_grad_2d(f, ht)
-
-    grad = outLayer.backward(np.ones(z.shape))
+    grad = outlayer.backward(np.ones((n_node, 1)))
     print("manual_grad", manual_grad)
+    print("grad", grad)
+
+
+def test_single_propogatorlayer():
+    n_node = 4
+    state_dim = 4
+    pre_state = np.random.random((n_node, state_dim))
+    a_in_t = np.random.random((n_node, state_dim))
+    a_out_t = np.random.random((n_node, state_dim))
+    propogatorLayer = PropogatorLayer(n_node, state_dim)
+
+    f = lambda x: np.sum(propogatorLayer.forward(x, a_in_t, a_out_t))
+    manual_grad = numerical_grad_2d(f, pre_state)
+    grad = propogatorLayer.backward(np.ones(pre_state.shape))[2]
+    print("manural_grad", manual_grad)
     print("grad", grad)
 
 
@@ -56,9 +68,7 @@ def test_single_globalLayer():
         a_in_t, a_out_t = globalLayer.forward(x, adj)
         return np.sum(a_in_t) + np.sum(a_out_t) + np.sum(x)
 
-
     manual_grad_x = numerical_grad_2d(f, pre_state)
-
     grad_a_in_t = np.ones(a_in_t.shape)
     grad_a_out_t = np.ones(a_out_t.shape)
     grad_pre_state = np.ones(pre_state.shape)
@@ -167,7 +177,6 @@ def test_GlobalLayer():
     print("grad", grad_x)
 
 
-
-
 if __name__ == '__main__':
-    test_single_losslayer()
+    test_single_outlayer()
+    test_single_propogatorlayer()
