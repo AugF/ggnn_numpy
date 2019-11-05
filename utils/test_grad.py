@@ -178,5 +178,4 @@ def test_GlobalLayer():
 
 
 if __name__ == '__main__':
-    test_single_outlayer()
-    test_single_propogatorlayer()
+    test_GlobalLayer()
