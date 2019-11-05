@@ -2,11 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="72d4404f-5a39-41c4-acb0-172d2b672a2f" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/babi_data/processed/train/test_graphs.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/dataset.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/layer.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/layer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/test_grad.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/test_grad.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -56,7 +54,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.main">
+  <component name="RunManager" selected="Python.test_grad">
     <configuration name="loss" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="ggnn_numpy" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -164,8 +162,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.main" />
         <item itemvalue="Python.test_grad" />
+        <item itemvalue="Python.main" />
         <item itemvalue="Python.optimizer" />
         <item itemvalue="Python.tools" />
         <item itemvalue="Python.loss" />

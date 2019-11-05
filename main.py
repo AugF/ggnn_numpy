@@ -37,14 +37,14 @@ for epoch in range(n_iters):
         net.backward()
         # print("train_data: [{}/{}] [{}/{}], loss: {}".format(epoch, n_iters, i, len(train_dataset), loss))
     # val step
-    correct = 0
-    loss = 0
-    for i, (adj, annotation, target) in enumerate(val_dataset):
-        loss += net.forward(annotation=annotation, adj=adj, mode="train", target=np.array([target]))
-        correct += int(np.argmax(net.z) == target) # todo check what's wrong
-    acc = correct * 1.0 / len(val_dataset)
-    avg_loss = loss / len(val_dataset)
-    print("val_data: [{}/{}], avg_loss {}".format(correct, len(val_dataset), avg_loss))
+    # correct = 0
+    # loss = 0
+    # for i, (adj, annotation, target) in enumerate(val_dataset):
+    #     loss += net.forward(annotation=annotation, adj=adj, mode="train", target=np.array([target]))
+    #     correct += int(np.argmax(net.z) == target) # todo check what's wrong
+    # acc = correct * 1.0 / len(val_dataset)
+    # avg_loss = loss / len(val_dataset)
+    # print("val_data: [{}/{}], avg_loss {}".format(correct, len(val_dataset), avg_loss))
 
 
 # 2. test model
