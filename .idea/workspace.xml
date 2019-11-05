@@ -3,8 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="72d4404f-5a39-41c4-acb0-172d2b672a2f" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/layer.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/layer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/test_grad.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/test_grad.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/test_cross-entropy.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/tools.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/tools.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -25,7 +25,7 @@
   <component name="ProjectId" id="1SzncDT9CLaloFzm7dw6fslO2K1" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../semi-gcn" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../ggnn.pytorch" />
     <property name="settings.editor.selected.configurable" value="preferences.keymap" />
   </component>
   <component name="PyConsoleOptionsProvider">
