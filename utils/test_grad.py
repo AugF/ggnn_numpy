@@ -51,8 +51,7 @@ def test_single_propogatorlayer():
 
 def test_single_globalLayer():
     n_node = 4
-    annotation_dim = 1
-    state_dim = 3
+    state_dim = 4
     n_edge_types = 2
 
     pre_state = np.random.random((n_node, state_dim))
@@ -79,7 +78,7 @@ def test_single_globalLayer():
 def test_outLayer():
     n_node = 4
     annotation_dim = 1
-    state_dim = 3
+    state_dim = 4
 
     annotation = np.random.random((n_node, annotation_dim))
     ht = np.random.random((n_node, state_dim))
@@ -102,7 +101,7 @@ def test_outLayer():
 def test_ProgatorLayer():
     n_node = 4
     annotation_dim = 1
-    state_dim = 3
+    state_dim = 4
 
     annotation = np.random.random((n_node, annotation_dim))
     pre_state = np.random.random((n_node, state_dim))
@@ -141,7 +140,7 @@ def test_ProgatorLayer():
 def test_GlobalLayer():
     n_node = 4
     annotation_dim = 1
-    state_dim = 3
+    state_dim = 4
     n_edge_types = 2
 
     annotation = np.random.random((n_node, annotation_dim))

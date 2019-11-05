@@ -1,5 +1,5 @@
 import numpy as np
-from utils.tools import sigmoid, onehot, softmax, wrapper
+from utils.tools import sigmoid, onehot, softmax, wrapper, get_Weight_from_file
 from utils.optimizer import Adam
 
 class LossLayer:
@@ -30,9 +30,9 @@ class OutLayer:
     def __init__(self, annotation_dim, state_dim, lr=0.005):
         self.annotation_dim = annotation_dim
         self.state_dim = state_dim
-        self.weight_ho = np.random.random((state_dim, state_dim))
-        self.weight_xo = np.random.random((annotation_dim, state_dim))
-        self.weight_o = np.random.random((state_dim, 1))
+        self.weight_ho = get_Weight_from_file((state_dim, state_dim), "weight_ho")
+        self.weight_xo = get_Weight_from_file((annotation_dim, state_dim), "weight_xo")
+        self.weight_o = get_Weight_from_file((state_dim, 1), "weight_o")
 
         self.adam_weight_ho = Adam(weights=self.weight_ho, learning_rate=lr)
         self.adam_weight_xo = Adam(weights=self.weight_xo, learning_rate=lr)
@@ -67,9 +67,15 @@ class PropogatorLayer:
     def __init__(self, state_dim, lr=0.005):
         self.lr = lr
         self.state_dim = state_dim
-        self.weight_z = np.random.random((3, state_dim, state_dim))
-        self.weight_r = np.random.random((3, state_dim, state_dim))
-        self.weight_h = np.random.random((3, state_dim, state_dim))
+        self.weight_z = np.zeros((3, state_dim, state_dim))
+        self.weight_r = np.zeros((3, state_dim, state_dim))
+        self.weight_h = np.zeros((3, state_dim, state_dim))
+
+        # init
+        for i in range(3):
+            self.weight_z[i] = get_Weight_from_file((state_dim, state_dim), "weight_z_{}".format(i))
+            self.weight_r[i] = get_Weight_from_file((state_dim, state_dim), "weight_z_{}".format(i))
+            self.weight_h[i] = get_Weight_from_file((state_dim, state_dim), "weight_h_{}".format(i))
 
         self.grad_weight_z = np.zeros(self.weight_z.shape)
         self.grad_weight_r = np.zeros(self.weight_r.shape)
@@ -141,8 +147,12 @@ class GlobalLayer:
         self.state_dim = state_dim
         self.n_node = n_node
         self.lr = lr
-        self.weight_in = np.random.random((n_edge_types, state_dim, state_dim))
-        self.weight_out = np.random.random((n_edge_types, state_dim, state_dim))
+        self.weight_in = np.zeros((n_edge_types, state_dim, state_dim))
+        self.weight_out = np.zeros((n_edge_types, state_dim, state_dim))
+
+        for i in range(2):
+            self.weight_in[i] = get_Weight_from_file((state_dim, state_dim), "weight_in_{}".format(i))
+            self.weight_out[i] = get_Weight_from_file((state_dim, state_dim), "weight_out_{}".format(i))
 
         self.grad_weight_in = np.zeros(self.weight_in.shape)
         self.grad_weight_out = np.zeros(self.weight_out.shape)

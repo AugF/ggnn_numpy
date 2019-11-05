@@ -2,9 +2,33 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="72d4404f-5a39-41c4-acb0-172d2b672a2f" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/_weights/weight_h_0.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/_weights/weight_h_1.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/_weights/weight_h_2.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/_weights/weight_h_bias.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/_weights/weight_ho.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/_weights/weight_in_0.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/_weights/weight_in_1.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/_weights/weight_in_bias_0.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/_weights/weight_in_bias_1.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/_weights/weight_o.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/_weights/weight_o_bias.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/_weights/weight_out_0.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/_weights/weight_out_1.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/_weights/weight_out_bias_0.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/_weights/weight_out_bias_1.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/_weights/weight_r_0.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/_weights/weight_r_1.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/_weights/weight_r_2.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/_weights/weight_r_bias.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/_weights/weight_xo.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/_weights/weight_z_0.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/_weights/weight_z_1.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/_weights/weight_z_2.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/_weights/weight_z_bias.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/test_cross-entropy.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/tools.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/tools.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/layer.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/layer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/test_grad.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/test_grad.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -25,7 +49,7 @@
   <component name="ProjectId" id="1SzncDT9CLaloFzm7dw6fslO2K1" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../ggnn.pytorch" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="preferences.keymap" />
   </component>
   <component name="PyConsoleOptionsProvider">
@@ -195,5 +219,16 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/utils/tools.py</url>
+          <line>59</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
