@@ -32,11 +32,15 @@ class OutLayer:
         self.state_dim = state_dim
         self.weight_ho = get_Weight_from_file((state_dim, state_dim), "weight_ho")
         self.weight_xo = get_Weight_from_file((annotation_dim, state_dim), "weight_xo")
+        self.weight_h_bias = get_Weight_from_file((state_dim, 1), "weight_h_bias").T
+
         self.weight_o = get_Weight_from_file((state_dim, 1), "weight_o")
+        self.weight_o_bias = get_Weight_from_file((1, 1), "weight_o_bias").T
 
         self.adam_weight_ho = Adam(weights=self.weight_ho, learning_rate=lr)
         self.adam_weight_xo = Adam(weights=self.weight_xo, learning_rate=lr)
         self.adam_weight_o = Adam(weights=self.weight_o, learning_rate=lr)
+
 
     def forward(self, ht, annotation):
         """
@@ -45,8 +49,8 @@ class OutLayer:
         :return: (n_node, 1)
         """
         self.ht, self.annotation = ht, annotation
-        self.z_1 = np.tanh(np.matmul(ht, self.weight_ho) + np.matmul(annotation, self.weight_xo))
-        self.z = np.matmul(self.z_1, self.weight_o)
+        self.z_1 = np.tanh(np.matmul(ht, self.weight_ho) + np.matmul(annotation, self.weight_xo) + self.weight_h_bias)
+        self.z = np.matmul(self.z_1, self.weight_o) + self.weight_o_bias
         return self.z
 
     def backward(self, grad_z):
@@ -77,6 +81,10 @@ class PropogatorLayer:
             self.weight_r[i] = get_Weight_from_file((state_dim, state_dim), "weight_z_{}".format(i))
             self.weight_h[i] = get_Weight_from_file((state_dim, state_dim), "weight_h_{}".format(i))
 
+        self.weight_h_bias = get_Weight_from_file((state_dim, 1), "weight_h_bias").T
+        self.weight_r_bias = get_Weight_from_file((state_dim, 1), "weight_r_bias").T
+        self.weight_z_bias = get_Weight_from_file((state_dim, 1), "weight_z_bias").T
+
         self.grad_weight_z = np.zeros(self.weight_z.shape)
         self.grad_weight_r = np.zeros(self.weight_r.shape)
         self.grad_weight_h = np.zeros(self.weight_h.shape)
@@ -97,13 +105,16 @@ class PropogatorLayer:
         self.a_out_t = a_out_t
         self.z_t = sigmoid(np.matmul(a_in_t, self.weight_z[0]) +
                            np.matmul(a_out_t, self.weight_z[1]) +
-                           np.matmul(pre_state, self.weight_z[2]))
+                           np.matmul(pre_state, self.weight_z[2]) +
+                           self.weight_z_bias)
         self.r_t = sigmoid(np.matmul(a_in_t, self.weight_r[0]) +
                            np.matmul(a_out_t, self.weight_r[1]) +
-                           np.matmul(pre_state, self.weight_r[2]))
+                           np.matmul(pre_state, self.weight_r[2]) +
+                           self.weight_r_bias)
         self.h_zt = np.tanh(np.matmul(a_in_t, self.weight_h[0]) +
                             np.matmul(a_out_t, self.weight_h[1]) +
-                            np.matmul(pre_state * self.r_t, self.weight_h[2]))
+                            np.matmul(pre_state * self.r_t, self.weight_h[2]) +
+                            self.weight_h_bias)
         self.h_t = (1 - self.z_t) * pre_state + self.z_t * self.h_zt
         return self.h_t
 
@@ -150,9 +161,14 @@ class GlobalLayer:
         self.weight_in = np.zeros((n_edge_types, state_dim, state_dim))
         self.weight_out = np.zeros((n_edge_types, state_dim, state_dim))
 
-        for i in range(2):
+        self.weight_in_bias = np.zeros((n_edge_types, 1, state_dim))
+        self.weight_out_bias = np.zeros((n_edge_types, 1, state_dim))
+
+        for i in range(n_edge_types):
             self.weight_in[i] = get_Weight_from_file((state_dim, state_dim), "weight_in_{}".format(i))
             self.weight_out[i] = get_Weight_from_file((state_dim, state_dim), "weight_out_{}".format(i))
+            self.weight_in_bias[i] = get_Weight_from_file((state_dim, 1), "weight_in_bias_{}".format(i)).T
+            self.weight_out_bias[i] = get_Weight_from_file((state_dim, 1), "weight_out_bias_{}".format(i)).T
 
         self.grad_weight_in = np.zeros(self.weight_in.shape)
         self.grad_weight_out = np.zeros(self.weight_out.shape)
@@ -171,8 +187,8 @@ class GlobalLayer:
         self.out_states = np.zeros((self.n_edge_types, self.n_node, self.state_dim))
 
         for i in range(self.n_edge_types):
-            self.in_states[i] = np.matmul(pre_state, self.weight_in[i])
-            self.out_states[i] = np.matmul(pre_state, self.weight_out[i])
+            self.in_states[i] = np.matmul(pre_state, self.weight_in[i]) + self.weight_in_bias[i]
+            self.out_states[i] = np.matmul(pre_state, self.weight_out[i]) + self.weight_out_bias[i]
 
         a_in_t = np.zeros((self.n_node, self.state_dim))
         a_out_t = np.zeros((self.n_node, self.state_dim))
