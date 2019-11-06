@@ -93,7 +93,7 @@ class PropogatorLayer:
         self.adam_weight_r = Adam(weights=self.grad_weight_r, learning_rate=lr)
         self.adam_weight_h = Adam(weights=self.grad_weight_h, learning_rate=lr)
 
-    def forward(self, pre_state, a_in_t, a_out_t):
+    def forward(self, pre_state, a_in_t, a_out_t, weight_h):
         """
         :param pre_state: (n_node, state_dim)
         :param a_in_t: (n_node, state_dim)
@@ -103,6 +103,7 @@ class PropogatorLayer:
         self.pre_state = pre_state
         self.a_in_t = a_in_t
         self.a_out_t = a_out_t
+        self.weight_z[2] = weight_h
         self.z_t = sigmoid(np.matmul(a_in_t, self.weight_z[0]) +
                            np.matmul(a_out_t, self.weight_z[1]) +
                            np.matmul(pre_state, self.weight_z[2]) +
@@ -128,9 +129,12 @@ class PropogatorLayer:
         grad_weight_r = np.zeros(self.weight_r.shape)
         grad_weight_h = np.zeros(self.weight_h.shape)
         for i, arr in enumerate([self.a_in_t, self.a_out_t, self.pre_state]):
-            grad_weight_h[i] = np.matmul(arr.T, grad_h)
-            grad_weight_r[i] = np.matmul(arr.T, grad_r)
             grad_weight_z[i] = np.matmul(arr.T, grad_z)
+            grad_weight_r[i] = np.matmul(arr.T, grad_r)
+            if i == 2:
+                grad_weight_h[i] = np.matmul((arr * self.r_t).T, grad_h)
+            else:
+                grad_weight_h[i] = np.matmul(arr.T, grad_h)
 
         grad_a_in_t = np.zeros(self.a_in_t.shape)
         grad_a_out_t = np.zeros(self.a_out_t.shape)

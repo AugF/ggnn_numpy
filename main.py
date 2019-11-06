@@ -34,9 +34,8 @@ for epoch in range(n_iters):
     # train_step
     for i, (adj, annotation, target) in enumerate(train_dataset):
         loss = net.forward(annotation=annotation, adj=adj, mode="train", target=np.array([target]))
-        print("after", net.GlobalLayer.weight_out)
         net.backward()
-        print("after", net.GlobalLayer.grad_weight_out)
+        print("after", net.PropogatorLayer.grad_weight_h)
         print("train_data: [{}/{}] [{}/{}] Loss: {}".format(epoch, n_iters, i, len(train_dataset), loss))
         break
     break

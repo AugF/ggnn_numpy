@@ -16,8 +16,8 @@ class GGNN:
         self.OutLayer = OutLayer(annotation_dim, state_dim, lr)
         self.LossLayer = LossLayer(n_node)
 
-    def forward(self, pre_state, annotation, adj, mode, target=None):
-        # pre_state = np.hstack((annotation, np.zeros((self.n_node, self.state_dim - self.annotation_dim))))
+    def forward(self, annotation, adj, mode, target=None):
+        pre_state = np.hstack((annotation, np.zeros((self.n_node, self.state_dim - self.annotation_dim))))
         # pre_state = annotation
         for i in range(1):
             a_in_t, a_out_t = self.GlobalLayer.forward(pre_state, adj)
@@ -42,6 +42,6 @@ class GGNN:
             self.GlobalLayer.grad_weight_in += grad_global_res[1]
             self.GlobalLayer.grad_weight_out += grad_global_res[2]
             grad_ht = grad_global_res[0]
-        self.PropogatorLayer.update()
-        self.GlobalLayer.update()
-        return grad_ht
+        # self.PropogatorLayer.update()
+        # self.GlobalLayer.update()
+        # return grad_ht

@@ -215,7 +215,7 @@ def test_model():
     adj = np.random.random((n_node, n_node * n_edge_types * 2))
     target = np.array([1])
 
-    f = lambda x: model.forward(x, annotation, adj, mode="train", target=target)
+    f = lambda x: model.forward(annotation, adj, mode="train", target=target)
 
     manual_grad = numerical_grad_2d(f, pre_state)
     grad = model.backward()
@@ -223,6 +223,20 @@ def test_model():
     print("manual grad", manual_grad)
     print("grad", grad)
 
+def test_propogator():
+    state_dim = 4
+    pro = PropogatorLayer(state_dim)
+    pre_state = np.random.random((4, 4))
+    a_in_t = np.random.random((4, 4))
+    a_out_t = np.random.random((4, 4))
+    weight_hz = np.random.random((4, 4))
+    f = lambda x: np.sum(pro.forward(pre_state, a_in_t, a_out_t, x))
+
+    manual_grad = numerical_grad_2d(f, weight_hz)
+    grad = pro.backward(np.ones((4, 4)))[-3][2]
+
+    print("manual_grad", manual_grad)
+    print("grad", grad)
 
 if __name__ == '__main__':
-    test_model()
+    test_propogator()
