@@ -19,7 +19,7 @@ class GGNN:
     def forward(self, annotation, adj, mode, target=None):
         pre_state = np.hstack((annotation, np.zeros((self.n_node, self.state_dim - self.annotation_dim))))
 
-        for i in range(self.n_steps):
+        for i in range(1):
             a_in_t, a_out_t = self.GlobalLayer.forward(pre_state, adj)
             pre_state = self.PropogatorLayer.forward(pre_state, a_in_t, a_out_t)
 
@@ -33,7 +33,7 @@ class GGNN:
         """share the GRU part, so should check"""
         grad_z = self.LossLayer.backward()
         grad_ht = self.OutLayer.backward(grad_z)
-        for i in range(self.n_steps):
+        for i in range(1):
             grad_res = self.PropogatorLayer.backward(grad_ht)
             self.PropogatorLayer.grad_weight_z += grad_res[3]
             self.PropogatorLayer.grad_weight_r += grad_res[4]
@@ -42,6 +42,5 @@ class GGNN:
             self.GlobalLayer.grad_weight_in += grad_global_res[1]
             self.GlobalLayer.grad_weight_out += grad_global_res[2]
             grad_ht = grad_global_res[0]
-
         self.PropogatorLayer.update()
         self.GlobalLayer.update()

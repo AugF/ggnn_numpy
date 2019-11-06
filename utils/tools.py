@@ -53,12 +53,13 @@ def save_weight(file_str, target):
 def get_Weight_from_file(shape, weight_str):
     m, n = shape
     ans = np.zeros((m, n), dtype=np.float32)
-    weight_path = "../_weights/{}.txt".format(weight_str)
+    weight_path = "_weights/{}.txt".format(weight_str)
     with open(weight_path, "r") as f:
         for i, line in enumerate(f.readlines()):
             for j, v in enumerate(line.strip().split(" ")):
                 ans[i, j] = float(v)
     return ans
+
 
 if __name__ == '__main__':
     x = np.random.random((2, 2))

@@ -27,7 +27,7 @@ class LossLayer:
 
 
 class OutLayer:
-    def __init__(self, annotation_dim, state_dim, lr=0.005):
+    def __init__(self, annotation_dim, state_dim, lr=0.01):
         self.annotation_dim = annotation_dim
         self.state_dim = state_dim
         self.weight_ho = get_Weight_from_file((state_dim, state_dim), "weight_ho")
@@ -55,20 +55,20 @@ class OutLayer:
 
     def backward(self, grad_z):
         t1 = np.matmul(grad_z, self.weight_o.T) * (1 - self.z_1 ** 2)
-        grad_weight_o = np.matmul(self.z_1.T, grad_z)
-        grad_weight_xo = np.matmul(self.annotation.T, t1)
-        grad_weight_ho = np.matmul(self.ht.T, t1)
+        self.grad_weight_o = np.matmul(self.z_1.T, grad_z)
+        self.grad_weight_xo = np.matmul(self.annotation.T, t1)
+        self.grad_weight_ho = np.matmul(self.ht.T, t1)
         grad_ht = np.matmul(t1, self.weight_ho.T)
         # update
-        self.weight_ho = self.adam_weight_ho.minimize(grad_weight_ho)
-        self.weight_xo = self.adam_weight_xo.minimize(grad_weight_xo)
-        self.weight_o = self.adam_weight_o.minimize(grad_weight_o)
+        self.weight_ho = self.adam_weight_ho.minimize(self.grad_weight_ho)
+        self.weight_xo = self.adam_weight_xo.minimize(self.grad_weight_xo)
+        self.weight_o = self.adam_weight_o.minimize(self.grad_weight_o)
         return grad_ht
 
 
 class PropogatorLayer:
     """maybe loop, so backward and grad should apart"""
-    def __init__(self, state_dim, lr=0.005):
+    def __init__(self, state_dim, lr=0.01):
         self.lr = lr
         self.state_dim = state_dim
         self.weight_z = np.zeros((3, state_dim, state_dim))
@@ -153,7 +153,7 @@ class PropogatorLayer:
 
 
 class GlobalLayer:
-    def __init__(self, n_edge_types, n_node, state_dim, lr=0.005):
+    def __init__(self, n_edge_types, n_node, state_dim, lr=0.01):
         self.n_edge_types = n_edge_types
         self.state_dim = state_dim
         self.n_node = n_node
