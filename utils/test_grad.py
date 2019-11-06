@@ -56,24 +56,53 @@ def test_single_globalLayer():
 
     pre_state = np.random.random((n_node, state_dim))
     adj = np.random.random((n_node, n_node * n_edge_types * 2))
+    weight_in_0 = np.random.random((state_dim, state_dim))
+    weight_out_0 = np.random.random((state_dim, state_dim))
+    weight_in_1 = np.random.random((state_dim, state_dim))
+    weight_out_1 = np.random.random((state_dim, state_dim))
 
-    globalLayer = GlobalLayer(n_edge_types, n_node, state_dim)
+    def f(weight_out_1):
+        in_states = np.zeros((n_edge_types, n_node, state_dim))
+        out_states = np.zeros((n_edge_types, n_node, state_dim))
 
-    a_in_t, a_out_t = globalLayer.forward(pre_state, adj)
-    loss = np.sum(a_in_t) + np.sum(a_out_t) + np.sum(pre_state)
-    print("loss", loss)
+        in_states[0] = np.matmul(pre_state, weight_in_0)
+        out_states[0] = np.matmul(pre_state, weight_out_0)
 
-    def f(x):
-        a_in_t, a_out_t = globalLayer.forward(x, adj)
-        return np.sum(a_in_t) + np.sum(a_out_t) + np.sum(x)
+        in_states[1] = np.matmul(pre_state, weight_in_1)
+        out_states[1] = np.matmul(pre_state, weight_out_1)
 
-    manual_grad_x = numerical_grad_2d(f, pre_state)
-    grad_a_in_t = np.ones(a_in_t.shape)
-    grad_a_out_t = np.ones(a_out_t.shape)
+        a_in_t = np.zeros((n_node, state_dim))
+        a_out_t = np.zeros((n_node, state_dim))
+        for i in range(n_edge_types):
+            a_in_t += np.matmul(adj[:, i * n_node: (i + 1) * n_node], in_states[i])
+            a_out_t += np.matmul(adj[:, (i + n_edge_types) * n_node: (i + 1 + n_edge_types) * n_node], out_states[i])
+        return np.sum(a_in_t) + np.sum(a_out_t) + np.sum(pre_state)
+
+    # manual grad
+    manual_grad_x = numerical_grad_2d(f, weight_out_1)
+
+    # input
+    grad_a_in_t = np.ones((n_node, state_dim))
+    grad_a_out_t = np.ones((n_node, state_dim))
     grad_pre_state = np.ones(pre_state.shape)
-    grad_x = globalLayer.backward(grad_a_in_t, grad_a_out_t, grad_pre_state)[0]
+    
+    # grad
+    grad_weight_in = np.zeros((n_edge_types, n_node, state_dim))
+    grad_weight_out = np.zeros((n_edge_types, n_node, state_dim))
+
+    for i in range(n_edge_types):
+        t1 = np.matmul(adj[:, i * n_node: (i + 1) * n_node].T, grad_a_in_t)
+        t2 = np.matmul(adj[:, (i + n_edge_types) * n_node: (i + 1 + n_edge_types) * n_node].T,
+                       grad_a_out_t)
+        grad_weight_in[i] = np.matmul(pre_state.T, t1)
+        grad_weight_out[i] = np.matmul(pre_state.T, t2)
+        if i == 0:
+            grad_pre_state += np.matmul(t1, weight_in_0.T) + np.matmul(t2, weight_out_0.T)
+        else:
+            grad_pre_state += np.matmul(t1, weight_in_1.T) + np.matmul(t2, weight_out_1.T)
+
     print("manual grad", manual_grad_x)
-    print("grad", grad_x)
+    print("grad", grad_weight_out)
 
 def test_outLayer():
     n_node = 4
@@ -177,4 +206,4 @@ def test_GlobalLayer():
 
 
 if __name__ == '__main__':
-    test_GlobalLayer()
+    test_single_globalLayer()
