@@ -3,7 +3,7 @@ from utils.layer import *
 
 class GGNN:
     """1. propagation step  2. output step; without grad update"""
-    def __init__(self, annotation_dim, state_dim, n_node, n_edge_types, n_steps, lr):
+    def __init__(self, annotation_dim, state_dim, n_node, n_edge_types, n_steps=5, lr=0.01):
         self.annotation_dim = annotation_dim
         self.state_dim = state_dim
         self.n_node = n_node
@@ -16,9 +16,9 @@ class GGNN:
         self.OutLayer = OutLayer(annotation_dim, state_dim, lr)
         self.LossLayer = LossLayer(n_node)
 
-    def forward(self, annotation, adj, mode, target=None):
-        pre_state = np.hstack((annotation, np.zeros((self.n_node, self.state_dim - self.annotation_dim))))
-
+    def forward(self, pre_state, annotation, adj, mode, target=None):
+        # pre_state = np.hstack((annotation, np.zeros((self.n_node, self.state_dim - self.annotation_dim))))
+        # pre_state = annotation
         for i in range(1):
             a_in_t, a_out_t = self.GlobalLayer.forward(pre_state, adj)
             pre_state = self.PropogatorLayer.forward(pre_state, a_in_t, a_out_t)
@@ -44,3 +44,4 @@ class GGNN:
             grad_ht = grad_global_res[0]
         self.PropogatorLayer.update()
         self.GlobalLayer.update()
+        return grad_ht

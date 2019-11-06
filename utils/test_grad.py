@@ -204,6 +204,25 @@ def test_GlobalLayer():
     print("manual grad", manual_grad_x)
     print("grad", grad_x)
 
+def test_model():
+    annotation_dim, state_dim, n_node, n_edge_types = 1, 4, 4, 2
+    from utils.model import GGNN
+    model = GGNN(annotation_dim=annotation_dim, state_dim=state_dim,
+                 n_node=n_node, n_edge_types=n_edge_types)
+
+    annotation = np.random.random((n_node, annotation_dim))
+    pre_state = np.random.random((n_node, state_dim))
+    adj = np.random.random((n_node, n_node * n_edge_types * 2))
+    target = np.array([1])
+
+    f = lambda x: model.forward(x, annotation, adj, mode="train", target=target)
+
+    manual_grad = numerical_grad_2d(f, pre_state)
+    grad = model.backward()
+
+    print("manual grad", manual_grad)
+    print("grad", grad)
+
 
 if __name__ == '__main__':
-    test_single_globalLayer()
+    test_model()
